@@ -4,7 +4,7 @@ from django.urls import reverse
 import json
 import pytest
 
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=True)
 class TestGetCompanies(TestCase):
     def test_zero_companies_should_return_empty_list(self) -> None:
         client = Client()
