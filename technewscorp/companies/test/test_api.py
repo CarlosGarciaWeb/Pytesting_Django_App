@@ -5,8 +5,19 @@ from companies.models import Company
 import json
 import pytest
 
+
 @pytest.mark.django_db(transaction=True)
-class TestGetCompanies(TestCase):
+class BasicCompanyApiTestCase(TestCase):
+    def setUp(self) -> None:
+        self.client = Client()
+        self.companies_url = reverse("companies-list")
+
+    def tearDown(self) -> None:
+        pass
+
+
+@pytest.mark.django_db(transaction=True)
+class TestGetCompanies(BasicCompanyApiTestCase):
     def setUp(self) -> None:
         self.client = Client()
         self.companies_url = reverse("companies-list")
@@ -27,3 +38,38 @@ class TestGetCompanies(TestCase):
         self.assertEqual(response_content.get("application_link"), "")
 
         test_company.delete()
+
+
+class TestPostCompanies(BasicCompanyApiTestCase):
+    def test_create_company_without_arguments_should_fail(self) -> None:
+        response = self.client.post(path=self.companies_url)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(json.loads(response.content), {"name": ["This field is required."]})
+
+
+    def test_create_existing_company_should_fail(self) -> None:
+        Company.objects.create(name="Sony")
+        response = self.client.post(path=self.companies_url, data={'name':"Sony"})
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(json.loads(response.content), {"name": ["company with this name already exists."]})
+
+    def test_create_company_with_only_name_all_fields_should_default(self) -> None:
+        response = self.client.post(path=self.companies_url, data={"name":"Test Company"})
+        self.assertEqual(response.status_code, 201)
+        response_content = json.loads(response.content)
+
+
+    def test_create_company_with_layoffs_status_should_succeed(self) -> None:
+        response = self.client.post(path=self.companies_url, data={"name": "Test Company", "status": "Layoffs"})
+        self.assertEqual(response.status_code, 201)
+        response_content = json.loads(response.content)
+        self.assertEqual(response_content.get("status"), "Layoffs")
+
+
+    def test_create_company_with_wrong_status_should_fail(self) -> None:
+        incorrect_status_name = "Froze"
+        response = self.client.post(path=self.companies_url, data={"name": "Test Company", "status": incorrect_status_name})
+        self.assertEqual(response.status_code, 400)
+        self.assertIn(incorrect_status_name, str(response.content))
+
+
