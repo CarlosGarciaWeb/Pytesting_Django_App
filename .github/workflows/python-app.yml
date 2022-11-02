@@ -40,4 +40,4 @@ jobs:
       continue-on-error: true
     - name: Test with pytest
       run: |
-        pytest technewscorp -v -rs
+        pytest technewscorp -v -rs --durations=0
