@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view
 from .serializers import CompanySerializer
 from .models import Company
 import os
+
 # Create your views here.
 
 
@@ -16,21 +17,25 @@ class CompanyViewSet(ModelViewSet):
     pagination_class = PageNumberPagination
 
 
-@api_view(http_method_names=['POST'])
-def send_company_email(request:Request) -> Response:
-    """
-    
-        sends email with request payload
-        sender: someone@email.com
-        receiver: othersomeone@email.com
-
-
+@api_view(http_method_names=["POST"])
+def send_company_email(request: Request) -> Response:
     """
 
-    send_mail (
-        subject=request.data.get("subject"), message=request.data.get("message"),
-        from_email= os.environ.get("TEST_EMAIL"), recipient_list=[os.environ.get("TEST_EMAIL")],
-        fail_silently=False
-    )    
+    sends email with request payload
+    sender: someone@email.com
+    receiver: othersomeone@email.com
 
-    return Response({"status": "success", "info": "email sent successfully"}, status=200)
+
+    """
+
+    send_mail(
+        subject=request.data.get("subject"),
+        message=request.data.get("message"),
+        from_email=os.environ.get("TEST_EMAIL"),
+        recipient_list=[os.environ.get("TEST_EMAIL")],
+        fail_silently=False,
+    )
+
+    return Response(
+        {"status": "success", "info": "email sent successfully"}, status=200
+    )
