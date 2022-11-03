@@ -40,4 +40,5 @@ jobs:
       continue-on-error: true
     - name: Test with pytest
       run: |
-        pytest technewscorp fibonacci -v -rs --durations=0
+        pytest technewscorp -v -rs --durations=0 --cov=.
+        pytest fibonacci -v -rs --durations=0 --cov=.
