@@ -58,5 +58,6 @@ jobs:
 
     - name: Test
       run: |
-        pytest technewscorp fibonacci -v -rs -s --durations=0 --cov=.
+        pytest technewscorp 
+        pytest fibonacci
 

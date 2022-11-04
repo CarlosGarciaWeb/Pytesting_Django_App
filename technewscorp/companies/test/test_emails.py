@@ -25,7 +25,6 @@ def test_send_email_should_succeed(mailoutbox, settings) -> None:
 
 
 def test_send_email_without_arguments_should_send_empty_email(client) -> None:
-    client = Client()
     with patch("companies.views.send_company_email") as mocked_send_email:
         response = client.post(path="/send-email")
         response_content = json.loads(response.content)
